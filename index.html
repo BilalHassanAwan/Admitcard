@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam Admit Card</title>
+
+    <script src="students.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 30px; display: flex; justify-content: center; }
+        .card { width: 750px; background: #fff; padding: 25px 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.15); border: 1px solid #dcdcdc; }
+        .header { text-align: center; border-bottom: 2px solid #003e7e; padding-bottom: 12px; }
+        .header h2 { margin: 0; font-size: 20px; color: #003e7e; }
+        .header h3 { margin: 4px 0 0; font-size: 16px; }
+        .info { margin-top: 20px; display: flex; justify-content: space-between; }
+        .info-left p { margin: 5px 0; font-size: 15px; }
+        .photo-box img { width: 110px; height: 130px; border: 1px solid #aaa; object-fit: cover; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+        table th { background: #003e7e; color: white; padding: 8px; font-size: 14px; }
+        table td { border: 1px solid #ccc; padding: 8px; font-size: 14px; }
+        #qrcode { margin-top: 20px; }
+        .print-btn { margin-top: 25px; background: #003e7e; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 15px; }
+        .print-btn:hover { background: #002955; }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <div class="header">
+        <h2>Pak-Austria Fachhochschule Institute of Applied Sciences & Technology</h2>
+        <h3>EXAM ADMIT CARD – Mid Semester Exam Fall-2025</h3>
+    </div>
+
+    <div class="info">
+        <div class="info-left">
+            <p><b>Name:</b> <span id="name"></span></p>
+            <p><b>Reg No:</b> <span id="reg"></span></p>
+            <p><b>Program:</b> <span id="program"></span></p>
+            <p><b>Semester:</b> <span id="semester"></span></p>
+        </div>
+
+        <div class="photo-box">
+            <img id="photo" src="" alt="Student Photo">
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Paper</th>
+                <th>Venue</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody id="examRows"></tbody>
+    </table>
+
+    <div id="qrcode"></div>
+
+    <button class="print-btn" onclick="window.print()">Print / Download PDF</button>
+</div>
+
+<script>
+    function getParam(name){
+        return new URLSearchParams(window.location.search).get(name);
+    }
+
+    const reg = getParam("reg");
+
+    if(students[reg]){
+        const s = students[reg];
+
+        document.getElementById("name").innerText = s.name;
+        document.getElementById("reg").innerText = reg;
+        document.getElementById("program").innerText = s.program;
+        document.getElementById("semester").innerText = s.semester;
+        document.getElementById("photo").src = s.photo;
+
+        let rows = "";
+        s.exams.forEach(exam => {
+            rows += `
+                <tr>
+                    <td>${exam.date}</td>
+                    <td>${exam.paper}</td>
+                    <td>${exam.venue}</td>
+                    <td>${exam.time}</td>
+                </tr>
+            `;
+        });
+        document.getElementById("examRows").innerHTML = rows;
+
+        new QRCode(document.getElementById("qrcode"), {
+            text: window.location.href,
+            width: 150,
+            height: 150
+        });
+
+    } else {
+        document.body.innerHTML = "<h2 style='color:red;'>Invalid Registration Number!</h2>";
+    }
+</script>
+
+</body>
+</html>
